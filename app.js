@@ -4,7 +4,7 @@ const D=window.REVIEW_DATA,Q=D.questions,KEY='level-up-english-v1',DAY=86400000;
 const skills={verbs:{name:'不规则动词',icon:'⚡',desc:'三态记忆 → 辨形 → 情境运用'},vocab:{name:'单词与词汇',icon:'Aa',desc:'中文拼写、语境填空、多维巩固'},grammar:{name:'语法与表达',icon:'⌘',desc:'句型、词形、翻译与实际应用'},tenses:{name:'时态判断',icon:'◷',desc:'一般过去 / 现在完成 / 过去完成'},reading:{name:'阅读与证据',icon:'⌕',desc:'找证据、连上下文、再下结论'},listening:{name:'听写辨音',icon:'♫',desc:'听英语 → 写单词 → 对照解析'}};
 const types={choice:'选择',judge:'判断',fill:'填空',spell:'拼写',dictation:'听写',translate:'翻译',reading:'语段探案'};
 const navs=[['home','◈','任务基地'],['lab','⚡','专项攻关'],['mixed','▦','混合演练'],['reading','⌕','阅读探案'],['mistakes','↺','错题修复'],['assessment','◴','能力雷达'],['knowledge','▤','知识补给'],['audio','♫','课本音频'],['sources','⊞','资料与设置']];
-const themes={robot:{name:'🤖 机甲工坊',icon:'🤖',call:'工程师',line:'把难题，拆成你的经验值。'},football:{name:'⚽ 球场战术室',icon:'⚽',call:'队长',line:'读懂局势，再打出关键一球。'},space:{name:'🪐 星际探索站',icon:'🪐',call:'探索者',line:'下一站，解锁你的英语宇宙。'}};
+const themes={robot:{name:'🤖 机甲工坊',icon:'🤖',call:'工程师',line:'把难题，<br>变成你的经验值。'},football:{name:'⚽ 球场战术室',icon:'⚽',call:'队长',line:'读懂局势，<br>打出关键一球。'},space:{name:'🪐 星际探索站',icon:'🪐',call:'探索者',line:'下一站，<br>解锁英语新宇宙。'}};
 let state;try{state=JSON.parse(localStorage.getItem(KEY))}catch{};
 state=validState(state)?state:{version:1,history:[],mistakes:{},xp:0,theme:'robot',sound:true,streak:0};
 let pendingModule=null;
