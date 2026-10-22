@@ -52,3 +52,11 @@ node verify_modules.cjs
 GitHub Pages 从 main 分支根目录部署。运行时不需要密钥。仓库只包含工作台程序、经整理的题库、来源名称和选定原声，不包含原始试卷DOCX/PDF、完整抽取语料、本机路径或孩子的学习档案。
 
 模块化文件：index.html 入口；style.css 响应式样式；app.js 交互与评估；data.js 基础题库；content.js 扩展包校验与加载；modules/catalog.js 正式单元目录。
+
+## 英文连击奖励
+
+答对按连击递进：Nice / Good / Very good / Excellent / Perfect / Wonderful / Amazing；同时配合 First Blood / Double Kill / Triple Kill / Quadra Kill / Penta Kill / Unstoppable / Legendary。答错中断连击；证据与关联正确但答案错误时，仅给思路奖励，不假报连击。
+
+rewards.js 独立管理 Web Audio 街机音阶、英文高音调短句播报、手机音频唤醒与取消。采用系统英文语音（优先较自然的英语嗓音），不是特定游戏原声或特定角色配音；设备音色可能不同。设置页可试听1—5连击，并随时停止。换题和关闭奖励会取消尚未结束的奖励音。
+
+新增检查：`node verify_rewards.cjs`。
