@@ -1,6 +1,6 @@
 # 后续单元内容接口
 
-当前默认主线保持 Starter—Unit 2、原表动词、两种完成时判断。示例包不会自动启用。
+当前默认主线为 Starter—Unit 3、原表动词、两种完成时判断。正式 unit3-jobs 包已启用，所有关联内容统一标记 `unit3`。示例包不会自动启用。
 
 支持两种扩展方式：
 
@@ -15,6 +15,8 @@ JSON 顶层字段：schemaVersion 固定为 1；id 为英文数字或连字符�
 - fill / spell / translate / dictation：answer 为可接受答案的字符串数组；dictation 另提供 audio（合成语音文本）和 clue（中文提示）。
 - reading：另提供 title、sentences（句子数组）、evidence（证据索引）、relations（关联思路数组）、relation（正确关联索引）、gloss（中文词汇提示），同时包含 options 和 answer。
 - 情境语法题可使用 passage 字符串数组。不要仅将长阅读全篇复制后换题干。
+- 阅读配套题可提供 parentId，填写同包阅读题的原始 id；加载器自动加命名空间，阅读训练时会带出配套题。
+- 顶层可提供 points（知识清单文本数组）和 vocab（词汇卡片数组，每项含 word、meaning、sentence、zh）；加载后自动标记该包的 unit。sentence 中用 ___ 表示目标词位置。
 
 系统会为题目加上 `单元包id:题目id` 命名空间，防止与原题ID冲突。导入前会检验题型、能力标签、答案索引、阅读证据和关联字段，拒绝损坏或重复题包。
 
