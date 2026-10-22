@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "u3-draft",
+  "title": "Unit 3 后续扩展示例（请按教材核验后启用）",
+  "unit": "U3",
+  "sourceName": "后续补充资料名称与具体页码",
+  "questions": [
+    {
+      "id": "example-01",
+      "skill": "grammar",
+      "type": "choice",
+      "level": 1,
+      "prompt": "This is ___ book.（单元包格式示例）",
+      "options": ["my", "I", "me", "mine"],
+      "answer": 0,
+      "hint": "名词 book 前需要什么词？",
+      "explain": "my 是形容词性物主代词，修饰 book。此题仅演示新增单元格式，默认不加入当前主线。"
+    }
+  ]
+}
