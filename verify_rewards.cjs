@@ -1,0 +1,11 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');let timers=[],spoken=[],canceled=0,voices=[{lang:'zh-CN',name:'Chinese'},{lang:'en-US',name:'Microsoft Aria Online'}];
+const synth={getVoices:()=>voices,cancel:()=>canceled++,speak:u=>spoken.push(u),addEventListener(){}};
+const c={window:{speechSynthesis:synth},speechSynthesis:synth,SpeechSynthesisUtterance:function(text){this.text=text},setTimeout(fn,ms){const t={fn,ms,active:true};timers.push(t);return t},clearTimeout(t){t.active=false}};
+vm.createContext(c);vm.runInContext(fs.readFileSync(__dirname+'/rewards.js','utf8'),c);const r=c.window.QUEST_REWARDS;let checks=0;const check=(x,m)=>{assert(x,m);checks++};const flush=()=>{const ts=timers;timers=[];ts.filter(t=>t.active).forEach(t=>t.fn())};
+for(const [n,word,call] of [[1,'Nice!','First Blood!'],[2,'Good!','Double Kill!'],[3,'Very good!','Triple Kill!'],[4,'Excellent!','Quadra Kill!'],[5,'Perfect!','Penta Kill!'],[6,'Wonderful!','Unstoppable!'],[7,'Amazing!','Legendary!']]){r.play(n);flush();const u=spoken.at(-1);check(u.text===word+' '+call,'正确递进播报');check(u.lang==='en-US'&&u.voice.lang==='en-US','只用英文嗓音');check(u.pitch>1&&u.rate>=1,'轻快高音调');}
+r.play(30);flush();check(spoken.at(-1).text.includes('Legendary'),'高连击稳定封顶');r.play(1,{reason:true,correct:false});flush();check(spoken.at(-1).text==='Great detective work! Evidence found!','证据奖励不错误宣称答对或连击');r.play(1,{reason:true});flush();check(spoken.at(-1).text.includes('First Blood! Great detective work!'),'阅读正确叠加奖励');
+const before=spoken.length;r.play(3);r.stop();flush();check(spoken.length===before,'静音或换题取消未播放语音');check(canceled>0,'切换奖励取消上一段语音');
+r.preview();flush();check(spoken.at(-1).text.includes('Penta Kill'),'五连击试听完整');
+let notice=0;voices=[];r.play(1,{onUnavailable:()=>notice++});flush();spoken.at(-1).onerror({error:'synthesis-failed'});check(notice===1,'语音包失败反馈');
+const fallback={window:{},setTimeout(fn){fn();return 1},clearTimeout(){}};vm.createContext(fallback);vm.runInContext(fs.readFileSync(__dirname+'/rewards.js','utf8'),fallback);fallback.window.QUEST_REWARDS.play(1,{onUnavailable:()=>notice++});check(notice===2,'不支持语音的浏览器安全回退');
+console.log(JSON.stringify({checks,result:'PASS'},null,2));

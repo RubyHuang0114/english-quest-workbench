@@ -6,7 +6,7 @@ const nodes=new Map();const node=s=>{if(!nodes.has(s))nodes.set(s,{innerHTML:'',
 const ctx={console,Date:Clock,setTimeout:()=>1,clearTimeout(){},Blob,URL,SpeechSynthesisUtterance:function(){},document:{documentElement:{dataset:{}},querySelector:node,querySelectorAll:()=>[],addEventListener(){},body:{append(){}},createElement:()=>node('a')},localStorage:{getItem:()=>null,setItem(){}},window:{scrollTo(){}}};
 vm.createContext(ctx);vm.runInContext(fs.readFileSync(__dirname+'/data.js','utf8'),ctx);vm.runInContext(fs.readFileSync(__dirname+'/audio.js','utf8'),ctx);
 let code=fs.readFileSync(__dirname+'/app.js','utf8').replace('// 只暴露只读内容计数',`window.__test={start,submit,metric,buildQueue,validState,norm,get state(){return state},get session(){return session},choose(a,e,r,h=false){sel=a;evidence=e;relation=r;hintUsed=h},reset(){state={version:1,history:[],mistakes:{},xp:0,theme:'robot',sound:false,streak:0}}};\n// 只暴露只读内容计数`);
-vm.runInContext(code,ctx);const t=ctx.window.__test,D=ctx.window.REVIEW_DATA,Q=D.questions;let checks=0;
+vm.runInContext(fs.readFileSync(__dirname+'/rewards.js','utf8'),ctx);vm.runInContext(code,ctx);const t=ctx.window.__test,D=ctx.window.REVIEW_DATA,Q=D.questions;let checks=0;
 const check=(condition,message)=>{assert(condition,message);checks++};
 check(Q.length>=650,'题库完整');check(D.verbs.length===102,'原表102项全部保留');check(new Set(Q.map(q=>q.id)).size===Q.length,'题目ID唯一');
 const dist=[0,0,0,0];
