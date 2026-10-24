@@ -10,3 +10,6 @@
 
 /* Unit 3 在题干、卡片和错题中保持同一标记。 */
 .unit3-tag{background:#eee6ff;color:#6441a5;border:1px solid #d8c5fc;font-weight:750}.unit3-entry{margin-top:14px}.unit3-entry .btn{border:1px solid #d8c5fc}
+
+/* U1—U3 dialogue relay */
+.dialogue-focus{margin:18px 0;padding:16px;border-left:4px solid var(--green,#b5ed83);background:#edf5e9;border-radius:10px;line-height:1.7;color:#183b30}.dialogue-analysis{padding:14px 18px;margin:14px 0;background:#ffffff99;border-radius:12px}.passage mark{background:#e8edf0;border-radius:5px;padding:2px 5px}.passage mark.target-blank{background:#ffc875;color:#382200;font-weight:800}.q-prompt{white-space:pre-line}@media(max-width:700px){.mobile-nav{grid-template-columns:repeat(7,1fr)}.dialogue-focus{font-size:14px}.dialogue-brief .chips{flex-wrap:wrap}}
