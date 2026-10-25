@@ -5,7 +5,7 @@ class Clock extends Date{constructor(...args){super(...(args.length?args:[now]))
 const nodes=new Map();const node=s=>{if(!nodes.has(s))nodes.set(s,{innerHTML:'',textContent:'',value:'',style:{},classList:{toggle(){}},scrollIntoView(){},blur(){},click(){},append(){},remove(){},files:[]});return nodes.get(s)};
 const ctx={console,Date:Clock,setTimeout:()=>1,clearTimeout(){},Blob,URL,SpeechSynthesisUtterance:function(){},document:{documentElement:{dataset:{}},querySelector:node,querySelectorAll:()=>[],addEventListener(){},body:{append(){}},createElement:()=>node('a')},localStorage:{getItem:()=>null,setItem(){}},window:{scrollTo(){}}};
 vm.createContext(ctx);vm.runInContext(fs.readFileSync(__dirname+'/data.js','utf8'),ctx);vm.runInContext(fs.readFileSync(__dirname+'/audio.js','utf8'),ctx);
-for(const f of ['modules/catalog.js','content.js','dialogues.js'])vm.runInContext(fs.readFileSync(__dirname+'/'+f,'utf8'),ctx);
+for(const f of ['modules/catalog.js','content.js','dialogues.js','dialogue04.js'])vm.runInContext(fs.readFileSync(__dirname+'/'+f,'utf8'),ctx);
 let code=fs.readFileSync(__dirname+'/app.js','utf8').replace('// 只暴露只读内容计数',`window.__test={start,submit,action,metric,buildQueue,validState,norm,get state(){return state},get session(){return session},choose(a,e,r,h=false){sel=a;evidence=e;relation=r;hintUsed=h},reset(){state={version:1,history:[],mistakes:{},xp:0,theme:'robot',sound:false,streak:0}}};\n// 只暴露只读内容计数`);
 vm.runInContext(fs.readFileSync(__dirname+'/rewards.js','utf8'),ctx);vm.runInContext(code,ctx);const t=ctx.window.__test,D=ctx.window.REVIEW_DATA,Q=D.questions;let checks=0;
 const check=(condition,message)=>{assert(condition,message);checks++};
@@ -26,9 +26,9 @@ check(t.norm("You've")!==t.norm('You have'),'不盲目接受未支持表达');ch
 const bear=D.verbs.find(v=>v.base==='bear');check(bear.pp==='borne','bear 忍受校正');check(!Q.some(q=>q.prompt.includes('can（')&&q.prompt.includes('过去分词')),'情态动词不生成分词默写');
 
 const dialogue=Q.filter(q=>q.skill==='dialogue');
-check(Q.length===839&&dialogue.length===42,'保留797题并新增42题');
+check(Q.length===943&&dialogue.length===146,'保留839题并新增104个原题空');
 for(const u of ['U1','U2','unit3'])check(dialogue.filter(q=>q.unit===u).length===14,'每单元14题');
-for(const c of ctx.window.DIALOGUE_CONTENT.cases){const qs=dialogue.filter(q=>q.caseId===c.id);check(qs.length===5&&new Set(qs.map(q=>q.blank)).size===5,'每组五空齐全');}
+for(const c of ctx.window.DIALOGUE_CONTENT.cases){const qs=dialogue.filter(q=>q.caseId===c.id);check(qs.length===(c.count||5)&&new Set(qs.map(q=>q.blank)).size===(c.count||5),'每组原题空位齐全');}
 const dq=dialogue.find(q=>q.type==='dialogue');t.reset();answer(dq,undefined,false,false);check(t.state.mistakes[dq.id]&&t.metric('dialogue').score===0,'答案对但关联错不能视为掌握');
 t.reset();for(const q of dialogue.filter(q=>q.type==='fill'))for(const a of q.answer)answer(q,a);check(t.metric('dialogue').score===100,'语法填空不要求不存在的证据步骤');
 t.action('start',{dataset:{skill:'dialogue',count:'12',type:'fill'}});check(t.session.queue.length===12&&t.session.queue.every(q=>q.type==='fill'),'语法按钮只启动填空题');
@@ -37,4 +37,20 @@ const raw=fs.existsSync(__dirname+'/sources/29.txt')?fs.readFileSync(__dirname+'
 for(const q of dialogue.filter(q=>q.caseId==='photo'))check(q.originalExplain&&(!raw||raw.includes(q.originalExplain)),'真题原解析完整保留');
 check(node('#app').innerHTML.includes('target-blank'),'当前空位突出显示');
 
+const added=Q.filter(q=>q.source==='dialogue04');
+check(added.length===104&&ctx.window.DIALOGUE04.cases.length===21,'押题04正文21篇104空全部录入');
+const source04=fs.existsSync(__dirname+'/sources/dialogue04-解析版.txt')?fs.readFileSync(__dirname+'/sources/dialogue04-解析版.txt','utf8'):null;
+for(const q of added){
+ check(q.originalExplain&&(!source04||source04.includes(q.originalExplain)),'原解析逐字保留：'+q.id);
+ check(q.passage.join(' ').includes('['+q.blank+']'),'当前空格存在：'+q.id);
+ check(q.answer.every(a=>a.length>2&&!a.includes('/')&&!/[一-龥]/.test(a)),'备选答案展开完整：'+q.id);
+ for(const a of q.answer){answer(q,a);check(t.state.history.at(-1).correct,'原参考表达均可接受：'+q.id+' '+a)}
+}
+for(const stage of ['基础入门','进阶拓展','综合实践']){t.action('dialogue04-stage',{dataset:{stage}});check(t.session.queue.length===8&&t.session.queue.every(q=>q.stage===stage&&q.source==='dialogue04'),'分层入口只抽取本层原题');}
+t.action('dialogue-case',{dataset:{case:'d04-16'}});check(t.session.queue.length===6&&t.session.queue.at(-1).blank===6,'六空题不截断');
+check(node('#app').innerHTML.includes('target-blank')&&!node('#app').innerHTML.includes('原资料解析 · 原文'),'答前高亮空位但不显示原解析');
+t.reset();answer(added[0],'This is not a valid answer');check(t.state.mistakes[added[0].id]&&!t.state.history.at(-1).correct,'新题错答自动归档');
+t.action('selfcheck',{});check(t.state.mistakes[added[0].id].reviewFlag&&!t.state.history.at(-1).correct,'待复核不会伪增正确率');
+check(added.some(q=>q.segments.flat().some(s=>s.underline&&s.text.includes('because'))),'原画线原因状语保留');
+check(added.find(q=>q.id==='d04-02-1').passage[0].startsWith('Situation:'),'故宫题依解析版补齐情景');
 console.log(JSON.stringify({checks,questions:Q.length,answerPositionDistribution:dist,result:'PASS'},null,2));
