@@ -5,7 +5,7 @@ class Clock extends Date{constructor(...args){super(...(args.length?args:[now]))
 const nodes=new Map();const node=s=>{if(!nodes.has(s))nodes.set(s,{innerHTML:'',textContent:'',value:'',style:{},classList:{toggle(){}},scrollIntoView(){},blur(){},click(){},append(){},remove(){},files:[]});return nodes.get(s)};
 const ctx={console,Date:Clock,setTimeout:()=>1,clearTimeout(){},Blob,URL,SpeechSynthesisUtterance:function(){},document:{documentElement:{dataset:{}},querySelector:node,querySelectorAll:()=>[],addEventListener(){},body:{append(){}},createElement:()=>node('a')},localStorage:{getItem:()=>null,setItem(){}},window:{scrollTo(){}}};
 vm.createContext(ctx);vm.runInContext(fs.readFileSync(__dirname+'/data.js','utf8'),ctx);vm.runInContext(fs.readFileSync(__dirname+'/audio.js','utf8'),ctx);
-for(const f of ['modules/catalog.js','content.js','dialogues.js','dialogue04.js'])vm.runInContext(fs.readFileSync(__dirname+'/'+f,'utf8'),ctx);
+for(const f of ['modules/catalog.js','modules/unit3-handout.js','content.js','dialogues.js','dialogue04.js'])vm.runInContext(fs.readFileSync(__dirname+'/'+f,'utf8'),ctx);
 let code=fs.readFileSync(__dirname+'/app.js','utf8').replace('// 只暴露只读内容计数',`window.__test={start,submit,action,metric,buildQueue,validState,norm,get state(){return state},get session(){return session},choose(a,e,r,h=false){sel=a;evidence=e;relation=r;hintUsed=h},reset(){state={version:1,history:[],mistakes:{},xp:0,theme:'robot',sound:false,streak:0}}};\n// 只暴露只读内容计数`);
 vm.runInContext(fs.readFileSync(__dirname+'/rewards.js','utf8'),ctx);vm.runInContext(code,ctx);const t=ctx.window.__test,D=ctx.window.REVIEW_DATA,Q=D.questions;let checks=0;
 const check=(condition,message)=>{assert(condition,message);checks++};
@@ -26,7 +26,7 @@ check(t.norm("You've")!==t.norm('You have'),'不盲目接受未支持表达');ch
 const bear=D.verbs.find(v=>v.base==='bear');check(bear.pp==='borne','bear 忍受校正');check(!Q.some(q=>q.prompt.includes('can（')&&q.prompt.includes('过去分词')),'情态动词不生成分词默写');
 
 const dialogue=Q.filter(q=>q.skill==='dialogue');
-check(Q.length===943&&dialogue.length===146,'保留839题并新增104个原题空');
+check(Q.length===943+ctx.window.REVIEW_MODULES[1].questions.length&&dialogue.length===146,'保留既有题目并接入U3七页讲义');
 for(const u of ['U1','U2','unit3'])check(dialogue.filter(q=>q.unit===u).length===14,'每单元14题');
 for(const c of ctx.window.DIALOGUE_CONTENT.cases){const qs=dialogue.filter(q=>q.caseId===c.id);check(qs.length===(c.count||5)&&new Set(qs.map(q=>q.blank)).size===(c.count||5),'每组原题空位齐全');}
 const dq=dialogue.find(q=>q.type==='dialogue');t.reset();answer(dq,undefined,false,false);check(t.state.mistakes[dq.id]&&t.metric('dialogue').score===0,'答案对但关联错不能视为掌握');
